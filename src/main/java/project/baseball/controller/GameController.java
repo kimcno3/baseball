@@ -13,14 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller.
- * DTO를 어떻게 나눌지 고민해볼 것.
-   * Data : 모든 데이터를 담고 있을 엔티티
-   * request
-     * answer
-
-   * Response
-     * success, data{}
- * */
+ **/
 @Slf4j
 @RestController
 @RequestMapping("/game")
@@ -34,7 +27,7 @@ public class GameController {
   @PostMapping("/{gameId}/answer")
   public ResponseEntity play(@PathVariable String gameId,
                              @RequestBody RequestAnswerDto answerDto) {
-    log.info("gameId = {}, answer = {}", gameId, answerDto.getAnswer());
+    log.info("gameId = {}, answer = {}", gameId, answerDto.getAnswer().getClass());
     return ResponseEntity.status(HttpStatus.OK).body("answer");
   }
 
