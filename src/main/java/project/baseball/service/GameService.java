@@ -5,5 +5,5 @@ package project.baseball.service;
  **/
 
 public interface GameService {
-
+  String saveRoomId();
 }
