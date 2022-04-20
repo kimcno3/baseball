@@ -1,5 +1,6 @@
 package project.baseball.domain;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Data {
+public class GameData {
   private boolean correct;
   private String roomId;
   private String answer;
@@ -28,4 +29,5 @@ public class Data {
   private AtomicInteger strike;
   private AtomicInteger ball;
   private AtomicInteger out;
+  private ArrayList<GameHistory> histories;
 }
