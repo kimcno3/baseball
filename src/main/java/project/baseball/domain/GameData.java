@@ -21,32 +21,29 @@ import lombok.Getter;
 @Entity
 @Getter
 public class GameData {
-  private boolean correct;
   private String roomId;
   private String answer;
   private int remainingCount;
   private int answerCount;
-  private int strike;
-  private int ball;
-  private int out;
-  private ArrayList<GameHistory> histories;
+  private ArrayList<GameHistory> histories = new ArrayList<>();
 
   /**
    * .
    */
 
   @Builder
-  public GameData(boolean correct, String roomId, String answer,
-                  int remainingCount, int answerCount, int strike,
-                  int ball, int out, ArrayList<GameHistory> histories) {
-    this.correct = correct;
+  public GameData(String roomId, String answer, int remainingCount, int answerCount) {
     this.roomId = roomId;
     this.answer = answer;
     this.remainingCount = remainingCount;
     this.answerCount = answerCount;
-    this.strike = strike;
-    this.ball = ball;
-    this.out = out;
-    this.histories = histories;
+  }
+
+  public int plusAnswerCount() {
+    return this.answerCount += 1;
+  }
+
+  public int minusRemainingCount() {
+    return this.remainingCount -= 1;
   }
 }

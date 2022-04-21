@@ -31,4 +31,14 @@ public class GameRepositoryImpl implements GameRepository {
   public GameData findById(Long id) {
     return database.get(id);
   }
+
+  @Override
+  public GameData findByRoomId(String roomId) {
+    for (GameData tempData : database.values()) {
+      if (tempData.getRoomId().equals(roomId)) {
+        return tempData;
+      }
+    }
+    throw new NullPointerException("해당 roomId는 없습니다");
+  }
 }

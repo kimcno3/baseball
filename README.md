@@ -14,14 +14,14 @@ response
 {
     "success": true,
     "data": {
-    "roomId": 123
+        "roomId": 123
     }
 }
 ```
 
 <br>
 
-### 게임 진행 (POST` /game/123/answer`)
+### 게임 진행 (POST `/game/123/answer`)
 request
 ```
 {    
@@ -33,11 +33,11 @@ response(게임 종료가 아닐 시)
 {
     "success": true,
     "data": {
-    "correct": true, // false
-    "remainingCount": 8,
-    "strike": 3,
-    "ball": 0,
-    "out": 0
+        "correct": true, // false
+        "remainingCount": 8,
+        "strike": 3,
+        "ball": 0,
+        "out": 0
     }
 }
 ```
@@ -48,8 +48,8 @@ resopnse(게임 종료 시)
     "success": false,
     "data": null,
     "error": {
-    "code": "CLOSED_GAME",
-    "message": ""
+        "code": "CLOSED_GAME",
+        "message": ""
     }
 }
 ```
@@ -62,8 +62,8 @@ response
 {
     "success": true,
     "data": {
-    "remainingCount": 8,
-    "answerCount": 2
+        "remainingCount": 8,
+        "answerCount": 2
     }
 }
 ```
