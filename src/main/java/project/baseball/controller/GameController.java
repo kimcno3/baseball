@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import project.baseball.domain.GameData;
+import project.baseball.dtos.GameStartDataDto;
+import project.baseball.dtos.RequestAnswerDto;
+import project.baseball.dtos.ResponseGameStartDto;
 import project.baseball.service.GameService;
 
 /**
@@ -24,10 +28,17 @@ public class GameController {
 
   private final GameService gameService;
 
+  /**
+   * .
+   */
+
   @PostMapping("/start")
   public ResponseEntity start() {
-    String roomId = gameService.saveRoomId();
-    return ResponseEntity.status(HttpStatus.OK).body(new ResponseRoomIdDto(roomId));
+    Long id = gameService.save();
+    GameData gameData = gameService.findGameData(id);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(new ResponseGameStartDto(true, new GameStartDataDto(gameData.getRoomId())));
   }
 
   @PostMapping("/{gameId}/answer")
