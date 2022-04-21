@@ -1,7 +1,6 @@
 package project.baseball.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * History.
@@ -9,7 +8,6 @@ import lombok.Setter;
  **/
 
 @Getter
-@Setter
 public class GameHistory {
   private String answer;
   private GameResult result;

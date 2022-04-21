@@ -1,8 +1,6 @@
 package project.baseball.domain;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Result.
@@ -10,9 +8,8 @@ import lombok.Setter;
  **/
 
 @Getter
-@Setter
 public class GameResult {
-  private AtomicInteger strike;
-  private AtomicInteger ball;
-  private AtomicInteger out;
+  private int strike;
+  private int ball;
+  private int out;
 }
