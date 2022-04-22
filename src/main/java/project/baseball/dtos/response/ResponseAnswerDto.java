@@ -1,8 +1,8 @@
-package project.baseball.dtos;
+package project.baseball.dtos.response;
 
-import javax.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import project.baseball.dtos.GameAnswerDataDto;
 
 /**
  *.

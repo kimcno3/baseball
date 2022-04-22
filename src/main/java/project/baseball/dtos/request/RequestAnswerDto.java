@@ -1,4 +1,4 @@
-package project.baseball.dtos;
+package project.baseball.dtos.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
