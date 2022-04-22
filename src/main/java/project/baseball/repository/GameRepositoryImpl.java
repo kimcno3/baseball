@@ -1,12 +1,14 @@
 package project.baseball.repository;
 
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.baseball.domain.GameData;
+import project.baseball.domain.GameHistory;
 
 /**
  * Repository 구현체.
@@ -25,6 +27,17 @@ public class GameRepositoryImpl implements GameRepository {
     database.put(sequence.incrementAndGet(), gameData);
     log.info("sequence = {}", sequence);
     return sequence.get();
+  }
+
+  @Override
+  public void saveHistory(String roomId, GameHistory history) {
+    GameData gameData = findByRoomId(roomId);
+
+    ArrayList<GameHistory> histories = gameData.getHistories();
+    histories.add(gameData.getAnswerCount(), history);
+
+    gameData.plusAnswerCount();
+    gameData.minusRemainingCount();
   }
 
   @Override

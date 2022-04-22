@@ -8,7 +8,9 @@ import project.baseball.domain.GameResult;
  **/
 
 public interface GameService {
-  Long save();
+  Long saveGameData();
+
+  GameResult saveHistory(int[] count, String answer, String roomId);
 
   GameData findGameData(Long id);
 

@@ -22,21 +22,69 @@ public class GameServiceImpl implements GameService {
   private final GameRepository gameRepository;
 
   @Override
-  public Long save() {
+  public Long saveGameData() {
+    String answer = makeAnswer();
+    GameData gameData = buildGameData(answer);
+    return gameRepository.save(gameData);
+  }
+
+  String makeAnswer() {
     String answer = "";
     while (answer.length() < 3) {
-      String randomString = RandomStringUtils.random(1, '1', '9', false, true);
+      String randomString = makeRandomString();
       if (answer.length() == 0 || !answer.contains(randomString)) {
         answer += randomString;
       }
     }
+    return answer;
+  }
+
+  GameData buildGameData(String answer) {
     GameData gameData = GameData.builder()
-        .roomId(RandomStringUtils.random(3, 'A', 'Z', true, false))
+        .roomId(makeRandomRoomId())
         .answer(answer)
         .answerCount(0)
         .remainingCount(10)
         .build();
-    return gameRepository.save(gameData);
+    return gameData;
+  }
+
+  String makeRandomString() {
+    return RandomStringUtils.random(1, '1', '9', false, true);
+  }
+
+  String makeRandomRoomId() {
+    return RandomStringUtils.random(3, 'A', 'Z', true, false);
+  }
+
+  @Override
+  public GameResult saveHistory(int[] count, String answer, String roomId) {
+    int s = count[0];
+    int b = count[1];
+    int o = count[2];
+
+    GameResult result = buildResult(s, b, o);
+    GameHistory history = buildHistory(answer, result);
+    gameRepository.saveHistory(roomId, history);
+    return result;
+  }
+
+  GameResult buildResult(int s, int b, int o) {
+    // 결과값 객체에 담아서 리턴
+    GameResult result = GameResult.builder()
+        .strike(s)
+        .ball(b)
+        .out(o)
+        .build();
+    return result;
+  }
+
+  GameHistory buildHistory(String answer, GameResult result) {
+    GameHistory history = GameHistory.builder()
+        .answer(answer)
+        .result(result)
+        .build();
+    return history;
   }
 
   @Override
@@ -49,55 +97,48 @@ public class GameServiceImpl implements GameService {
     return gameRepository.findByRoomId(roomId);
   }
 
-  /**
-   * .
-  **/
-
   @Override
   public GameResult playGame(String roomId, String answer) {
     GameData gameData = gameRepository.findByRoomId(roomId);
+    int[] count = {0, 0, 0};
+    // 카운트 계산 로직
+    checkCount(gameData, answer, count);
+    // 결과값 저장 및 리턴
+    return saveHistory(count, answer, roomId);
+  }
 
-    // 카운트 계산
-    int s = 0;
-    int b = 0;
-    int o = 0;
+  void checkCount(GameData gameData, String answer, int[] count) {
+    String gameDataAnswer = gameData.getAnswer();
+    String[] gameDataAnswerArray = splitAnswer(gameDataAnswer);
+    String[] userAnswerArray = splitAnswer(answer);
 
-    String[] answerArray = answer.split("");
-    String[] gameDataAnswerArray = gameData.getAnswer().split("");
-
-    for (int i = 0; i < gameDataAnswerArray.length; i++) {
-      for (int j = 0; j < answerArray.length; j++) {
-        if (i == j && gameDataAnswerArray[i].equals(answerArray[j])) {
-          // 스트라이크
-          s++;
-          break;
-        } else if (i != j && gameDataAnswerArray[i].equals(answerArray[j])) {
-          // 볼
-          b++;
-          break;
-        } else if (j == answerArray.length - 1) {
-          // 아웃
-          o++;
-        }
+    for (int i = 0; i < userAnswerArray.length; i++) {
+      String userText = userAnswerArray[i];
+      checkOutCount(gameDataAnswer, userText, count); // out
+      for (int j = 0; j < gameDataAnswerArray.length; j++) {
+        String gameDataText = gameDataAnswerArray[j];
+        checkStrikeAndBallCount(gameDataText, userText, count, i, j); // strike, ball
       }
     }
-    // 결과값 객체에 담아서 리턴
-    GameResult result = GameResult.builder()
-        .strike(s)
-        .ball(b)
-        .out(o)
-        .build();
+  }
 
-    GameHistory history = GameHistory.builder()
-        .answer(answer)
-        .result(result)
-        .build();
-    // history 저장, 인덱스는 answer 카운터로
-    gameData.getHistories().add(gameData.getAnswerCount(), history);
-    // answerCount, remainingCount 수정
-    gameData.plusAnswerCount();
-    gameData.minusRemainingCount();
+  String[] splitAnswer(String answer) {
+    return answer.split("");
+  }
 
-    return result;
+  void checkOutCount(String gameDataAnswer, String userText, int[] count) {
+    if (!gameDataAnswer.contains(userText)) {
+      count[2]++;
+    }
+  }
+
+  void checkStrikeAndBallCount(String gameDataText, String userText, int[] count, int i, int j) {
+    if (gameDataText.equals(userText)) {
+      if (i == j) {
+        count[0]++;
+      } else {
+        count[1]++;
+      }
+    }
   }
 }

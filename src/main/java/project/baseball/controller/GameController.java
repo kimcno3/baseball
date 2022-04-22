@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameResult;
 import project.baseball.dtos.GameAnswerDataDto;
+import project.baseball.dtos.GameAnswerErrorDto;
 import project.baseball.dtos.GameStartDataDto;
 import project.baseball.dtos.RequestAnswerDto;
 import project.baseball.dtos.ResponseAnswerDto;
+import project.baseball.dtos.ResponseCloseGameDto;
 import project.baseball.dtos.ResponseGameStartDto;
 import project.baseball.service.GameService;
 
@@ -37,7 +39,7 @@ public class GameController {
 
   @PostMapping("/start")
   public ResponseEntity start() {
-    Long id = gameService.save();
+    Long id = gameService.saveGameData();
     GameData gameData = gameService.findGameData(id);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -51,25 +53,34 @@ public class GameController {
   @PostMapping("/{roomId}/answer")
   public ResponseEntity play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.findGameData(roomId);
-    if (0 < gameData.getRemainingCount() && gameData.getRemainingCount() <= 10) {
-      GameResult result = gameService.playGame(roomId, answerDto.getAnswer());
-      if (result.getStrike() == 3 || gameData.getRemainingCount() == 0) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body("Closed");
-      }
-      int remainingCount = gameData.getRemainingCount();
-      int strike = result.getStrike();
-      int ball = result.getBall();
-      int out = result.getOut();
 
+    int remainingCount = gameData.getRemainingCount();
+
+    // 게임이 가능한 경우
+    if (answerDto.getAnswer().length() == 3 && (0 < remainingCount && remainingCount <= 10)) {
+      GameResult result = gameService.playGame(roomId, answerDto.getAnswer());
+
+      int s = result.getStrike();
+      int b = result.getBall();
+      int o = result.getOut();
+
+      // 게임이 끝난 경우 - 정답
+      if (result.getStrike() == 3) {
+        return ResponseEntity.status(HttpStatus.OK).body("correct");
+      }
+
+      // 게임이 끝나지 않은 경우
       return ResponseEntity
           .status(HttpStatus.OK)
-          .body(new ResponseAnswerDto(
-              true, new GameAnswerDataDto(
-                  false, remainingCount, strike, ball, out)));
+          .body(new ResponseAnswerDto(true,
+              new GameAnswerDataDto(false, remainingCount, s, b, o)));
     }
-    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("X");
+
+    // 게임이 끝난 경우 - 답 입력 10번 초과
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(new ResponseCloseGameDto(false, null,
+            new GameAnswerErrorDto("CLOSED_GAME", "")));
   }
 
   @GetMapping("/{roomId}")
