@@ -87,15 +87,13 @@ public class GameServiceImpl implements GameService {
 
   @Override
   public boolean playGame(String roomId, String answer) {
-    int[] count = {0, 0, 0};
-
     GameData gameData = gameRepository.findByRoomId(roomId);
     int preRemainingCount = gameData.getRemainingCount();
 
     // 게임이 가능한 경우
     if (answer.length() == 3 && (0 < preRemainingCount && preRemainingCount <= 10)) {
       // 카운트 계산 로직
-      checkCount(gameData, answer, count);
+      int[] count = checkCount(gameData, answer);
       // 결과값 저장
       GameResult result = saveHistory(count, answer, roomId);
       // 답변수, 남은 횟수 수정
@@ -115,43 +113,50 @@ public class GameServiceImpl implements GameService {
   }
 
   // 게임 로직 구현 시 필요한 메소드 -> 구분할 방법은?
-  private void checkCount(GameData gameData, String answer, int[] count) {
+  private int[] checkCount(GameData gameData, String answer) {
     String gameDataAnswer = gameData.getAnswer();
     String[] gameDataAnswerArray = splitAnswer(gameDataAnswer);
     String[] userAnswerArray = splitAnswer(answer);
 
-    int s = count[0];
-    int b = count[1];
-    int o = count[2];
+    int s = 0;
+    int b = 0;
+    int o = 0;
 
     for (int i = 0; i < userAnswerArray.length; i++) {
       String userText = userAnswerArray[i];
-      checkOutCount(gameDataAnswer, userText, o); // out
+      o = checkOutCount(gameDataAnswer, userText, o); // out
       for (int j = 0; j < gameDataAnswerArray.length; j++) {
         String gameDataText = gameDataAnswerArray[j];
-        checkStrikeAndBallCount(gameDataText, userText, s, b, i, j); // strike, ball
+        s = checkStrikeCount(gameDataText, userText, s, i, j); // strike
+        b = checkBallCount(gameDataText, userText, b, i, j); // ball
       }
     }
+    int[] count = {s, b, o};
+    return count;
   }
 
   private String[] splitAnswer(String answer) {
     return answer.split("");
   }
 
-  private void checkOutCount(String gameDataAnswer, String userText, int o) {
+  private int checkOutCount(String gameDataAnswer, String userText, int o) {
     if (!gameDataAnswer.contains(userText)) {
       o++;
     }
+    return o;
   }
 
-  private void checkStrikeAndBallCount(String gameDataText, String userText,
-                                                 int s, int b, int i, int j) {
-    if (gameDataText.equals(userText)) {
-      if (i == j) {
-        s++;
-      } else {
-        b++;
-      }
+  private int checkStrikeCount(String gameDataText, String userText, int s, int i, int j) {
+    if (gameDataText.equals(userText) && i == j) {
+      s++;
     }
+    return s;
+  }
+
+  private int checkBallCount(String gameDataText, String userText, int b, int i, int j) {
+    if (gameDataText.equals(userText) && i != j) {
+      b++;
+    }
+    return b;
   }
 }
