@@ -10,7 +10,7 @@ import project.baseball.dtos.GameAnswerDataDto;
 
 @Getter
 @AllArgsConstructor
-public class ResponseAnswerDto {
+public class ResponseGameContinueDto {
   private boolean success;
   private GameAnswerDataDto data;
 }

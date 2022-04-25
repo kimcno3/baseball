@@ -11,7 +11,7 @@ import project.baseball.dtos.GameAnswerErrorDto;
 
 @Getter
 @AllArgsConstructor
-public class ResponseCloseGameDto {
+public class ResponseGameCloseDto {
   private boolean success;
   private GameAnswerDataDto data;
   private GameAnswerErrorDto error;

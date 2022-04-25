@@ -10,7 +10,7 @@ import project.baseball.dtos.GameResultDto;
 
 @Getter
 @AllArgsConstructor
-public class ResponseResultDto {
+public class ResponseGameResultDto {
   private final boolean success;
   private final GameResultDto data;
 }
