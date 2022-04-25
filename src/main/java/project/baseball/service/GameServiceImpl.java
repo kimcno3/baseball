@@ -1,8 +1,10 @@
 package project.baseball.service;
 
+import static project.baseball.utils.RandomStringMaker.makeAnswer;
+import static project.baseball.utils.RandomStringMaker.makeRandomRoomId;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameHistory;
@@ -112,26 +114,6 @@ public class GameServiceImpl implements GameService {
     }
     // 게임이 불가능한 경우
     throw new RuntimeException("게임 진행 불가");
-  }
-
-  // 랜덤 roomId, answer 생성 코드 -> util 패키지로 구분
-  String makeAnswer() {
-    String answer = "";
-    while (answer.length() < 3) {
-      String randomString = makeRandomString();
-      if (answer.length() == 0 || !answer.contains(randomString)) {
-        answer += randomString;
-      }
-    }
-    return answer;
-  }
-
-  String makeRandomString() {
-    return RandomStringUtils.random(1, '1', '9', false, true);
-  }
-
-  String makeRandomRoomId() {
-    return RandomStringUtils.random(3, 'A', 'Z', true, false);
   }
 
   // 게임 로직 구현 시 필요한 메소드 -> 구분할 방법은?
