@@ -46,7 +46,7 @@ public class GameServiceImpl implements GameService {
     return gameRepository.save(gameData);
   }
 
-  GameData buildGameData(String answer) {
+  private GameData buildGameData(String answer) {
     GameData gameData = GameData.builder()
         .roomId(makeRandomRoomId())
         .answer(answer)
@@ -56,7 +56,7 @@ public class GameServiceImpl implements GameService {
     return gameData;
   }
 
-  GameResult saveHistory(int[] count, String answer, String roomId) {
+  private GameResult saveHistory(int[] count, String answer, String roomId) {
     int s = count[0];
     int b = count[1];
     int o = count[2];
@@ -67,7 +67,15 @@ public class GameServiceImpl implements GameService {
     return result;
   }
 
-  GameResult buildResult(int s, int b, int o) {
+  private GameHistory buildHistory(String answer, GameResult result) {
+    GameHistory history = GameHistory.builder()
+        .answer(answer)
+        .result(result)
+        .build();
+    return history;
+  }
+
+  private GameResult buildResult(int s, int b, int o) {
     // 결과값 객체에 담아서 리턴
     GameResult result = GameResult.builder()
         .strike(s)
@@ -75,14 +83,6 @@ public class GameServiceImpl implements GameService {
         .out(o)
         .build();
     return result;
-  }
-
-  GameHistory buildHistory(String answer, GameResult result) {
-    GameHistory history = GameHistory.builder()
-        .answer(answer)
-        .result(result)
-        .build();
-    return history;
   }
 
   @Override
@@ -98,11 +98,9 @@ public class GameServiceImpl implements GameService {
       checkCount(gameData, answer, count);
       // 결과값 저장
       GameResult result = saveHistory(count, answer, roomId);
-
       // 답변수, 남은 횟수 수정
       gameData.plusAnswerCount();
       gameData.minusRemainingCount();
-
       // 게임이 끝난 경우 - 정답 or 답변 횟수 10번 초과
       int remainingCount = gameData.getRemainingCount();
       int s = result.getStrike();
@@ -117,37 +115,42 @@ public class GameServiceImpl implements GameService {
   }
 
   // 게임 로직 구현 시 필요한 메소드 -> 구분할 방법은?
-  void checkCount(GameData gameData, String answer, int[] count) {
+  private void checkCount(GameData gameData, String answer, int[] count) {
     String gameDataAnswer = gameData.getAnswer();
     String[] gameDataAnswerArray = splitAnswer(gameDataAnswer);
     String[] userAnswerArray = splitAnswer(answer);
 
+    int s = count[0];
+    int b = count[1];
+    int o = count[2];
+
     for (int i = 0; i < userAnswerArray.length; i++) {
       String userText = userAnswerArray[i];
-      checkOutCount(gameDataAnswer, userText, count); // out
+      checkOutCount(gameDataAnswer, userText, o); // out
       for (int j = 0; j < gameDataAnswerArray.length; j++) {
         String gameDataText = gameDataAnswerArray[j];
-        checkStrikeAndBallCount(gameDataText, userText, count, i, j); // strike, ball
+        checkStrikeAndBallCount(gameDataText, userText, s, b, i, j); // strike, ball
       }
     }
   }
 
-  String[] splitAnswer(String answer) {
+  private String[] splitAnswer(String answer) {
     return answer.split("");
   }
 
-  void checkOutCount(String gameDataAnswer, String userText, int[] count) {
+  private void checkOutCount(String gameDataAnswer, String userText, int o) {
     if (!gameDataAnswer.contains(userText)) {
-      count[2]++;
+      o++;
     }
   }
 
-  void checkStrikeAndBallCount(String gameDataText, String userText, int[] count, int i, int j) {
+  private void checkStrikeAndBallCount(String gameDataText, String userText,
+                                                 int s, int b, int i, int j) {
     if (gameDataText.equals(userText)) {
       if (i == j) {
-        count[0]++;
+        s++;
       } else {
-        count[1]++;
+        b++;
       }
     }
   }

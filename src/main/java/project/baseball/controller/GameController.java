@@ -59,9 +59,9 @@ public class GameController {
   @PostMapping("/{roomId}/answer")
   public ResponseEntity play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.findGameData(roomId);
-    boolean isSuccess = gameService.playGame(roomId, answerDto.getAnswer());
+    boolean successFlag = gameService.playGame(roomId, answerDto.getAnswer());
 
-    if (isSuccess) {
+    if (successFlag) {
       // 게임이 안끝난 경우 - 아직 기회가 남은 경우
       GameResult result = gameService.findResult(roomId);
       int remainingCount = gameData.getRemainingCount();
@@ -71,13 +71,13 @@ public class GameController {
 
       return ResponseEntity
           .status(HttpStatus.OK)
-          .body(new ResponseAnswerDto(isSuccess,
+          .body(new ResponseAnswerDto(successFlag,
               new GameAnswerDataDto(false, remainingCount, s, b, o)));
     } else {
       // 게임이 끝난 경우 - 정답을 맞췄거나 기회를 다 소모한 경우
       return ResponseEntity
           .status(HttpStatus.OK)
-          .body(new ResponseCloseGameDto(isSuccess, null,
+          .body(new ResponseCloseGameDto(successFlag, null,
               new GameAnswerErrorDto("CLOSED_GAME", "")));
     }
   }
