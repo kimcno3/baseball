@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameHistory;
+import project.baseball.domain.GameResult;
 
 /**
  * Repository 구현체.
@@ -35,9 +36,6 @@ public class GameRepositoryImpl implements GameRepository {
 
     ArrayList<GameHistory> histories = gameData.getHistories();
     histories.add(gameData.getAnswerCount(), history);
-
-    gameData.plusAnswerCount();
-    gameData.minusRemainingCount();
   }
 
   @Override
@@ -53,5 +51,10 @@ public class GameRepositoryImpl implements GameRepository {
       }
     }
     throw new NullPointerException("해당 roomId는 없습니다");
+  }
+
+  @Override
+  public GameResult findResultByGameData(GameData gameData) {
+    return gameData.getHistories().get(gameData.getAnswerCount() - 1).getResult();
   }
 }

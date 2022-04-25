@@ -10,11 +10,11 @@ import project.baseball.domain.GameResult;
 public interface GameService {
   Long saveGameData();
 
-  GameResult saveHistory(int[] count, String answer, String roomId);
-
   GameData findGameData(Long id);
 
   GameData findGameData(String gameId);
 
-  GameResult playGame(String roomId, String answer);
+  GameResult findResult(String roomId);
+
+  boolean playGame(String roomId, String answer);
 }

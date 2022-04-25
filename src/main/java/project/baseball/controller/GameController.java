@@ -59,35 +59,27 @@ public class GameController {
   @PostMapping("/{roomId}/answer")
   public ResponseEntity play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.findGameData(roomId);
-    int preRemainingCount = gameData.getRemainingCount();
+    boolean isSuccess = gameService.playGame(roomId, answerDto.getAnswer());
 
-    // 게임이 가능한 경우
-    if (answerDto.getAnswer().length() == 3 && (0 < preRemainingCount && preRemainingCount <= 10)) {
-      GameResult result = gameService.playGame(roomId, answerDto.getAnswer());
+    if (isSuccess) {
+      // 게임이 안끝난 경우 - 아직 기회가 남은 경우
+      GameResult result = gameService.findResult(roomId);
       int remainingCount = gameData.getRemainingCount();
       int s = result.getStrike();
       int b = result.getBall();
       int o = result.getOut();
 
-      // 게임이 끝난 경우 - 정답
-      if (result.getStrike() == 3) {
-        return ResponseEntity.status(HttpStatus.OK).body("correct");
-      }
-
-      // 게임이 끝난 경우 - 답변 횟수 10번 초과
-      if (remainingCount <= 0) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(new ResponseCloseGameDto(false, null,
-                new GameAnswerErrorDto("CLOSED_GAME", "")));
-      }
-      // 게임 계속 진행
       return ResponseEntity
           .status(HttpStatus.OK)
-          .body(new ResponseAnswerDto(true,
+          .body(new ResponseAnswerDto(isSuccess,
               new GameAnswerDataDto(false, remainingCount, s, b, o)));
+    } else {
+      // 게임이 끝난 경우 - 정답을 맞췄거나 기회를 다 소모한 경우
+      return ResponseEntity
+          .status(HttpStatus.OK)
+          .body(new ResponseCloseGameDto(isSuccess, null,
+              new GameAnswerErrorDto("CLOSED_GAME", "")));
     }
-    throw new RuntimeException("새로운 예외");
   }
 
   /**
