@@ -41,7 +41,7 @@ public class GameController {
    */
 
   @PostMapping("/start")
-  public ResponseEntity start() {
+  public ResponseEntity<ResponseGameDto> start() {
     Long id = gameService.saveGameData();
     GameData gameData = gameService.findGameData(id);
     return ResponseEntity
@@ -54,7 +54,7 @@ public class GameController {
    */
 
   @PostMapping("/{roomId}/answer")
-  public ResponseEntity play(@PathVariable String roomId,
+  public ResponseEntity<ResponseGameDto> play(@PathVariable String roomId,
                                               @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.findGameData(roomId);
     boolean successFlag = gameService.playGame(roomId, answerDto.getAnswer());
@@ -85,7 +85,7 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}")
-  public ResponseEntity result(@PathVariable String roomId) {
+  public ResponseEntity<ResponseGameDto> result(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
     int remainingCount = gameData.getRemainingCount();
     int answerCount = gameData.getAnswerCount();
@@ -99,7 +99,7 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}/history")
-  public ResponseEntity history(@PathVariable String roomId) {
+  public ResponseEntity<ResponseGameDto> history(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
     Collection<GameHistory> histories = gameData.getHistories();
     return ResponseEntity
