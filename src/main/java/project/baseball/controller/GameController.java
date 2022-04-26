@@ -21,10 +21,7 @@ import project.baseball.dtos.GameResultDto;
 import project.baseball.dtos.GameStartDataDto;
 import project.baseball.dtos.request.RequestAnswerDto;
 import project.baseball.dtos.response.ResponseGameCloseDto;
-import project.baseball.dtos.response.ResponseGameContinueDto;
-import project.baseball.dtos.response.ResponseGameHistoriesDto;
-import project.baseball.dtos.response.ResponseGameResultDto;
-import project.baseball.dtos.response.ResponseGameStartDto;
+import project.baseball.dtos.response.ResponseGameDto;
 import project.baseball.service.GameService;
 
 /**
@@ -44,12 +41,12 @@ public class GameController {
    */
 
   @PostMapping("/start")
-  public ResponseEntity<ResponseGameStartDto> start() {
+  public ResponseEntity start() {
     Long id = gameService.saveGameData();
     GameData gameData = gameService.findGameData(id);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(new ResponseGameStartDto(true, new GameStartDataDto(gameData.getRoomId())));
+        .body(new ResponseGameDto(true, new GameStartDataDto(gameData.getRoomId())));
   }
 
   /**
@@ -57,7 +54,8 @@ public class GameController {
    */
 
   @PostMapping("/{roomId}/answer")
-  public ResponseEntity play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
+  public ResponseEntity play(@PathVariable String roomId,
+                                              @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.findGameData(roomId);
     boolean successFlag = gameService.playGame(roomId, answerDto.getAnswer());
 
@@ -71,14 +69,14 @@ public class GameController {
 
       return ResponseEntity
           .status(HttpStatus.OK)
-          .body(new ResponseGameContinueDto(successFlag,
-              new GameAnswerDataDto(false, remainingCount, s, b, o)));
+          .body(new ResponseGameDto(successFlag,
+                new GameAnswerDataDto(false, remainingCount, s, b, o)));
     } else {
       // 게임이 끝난 경우 - 정답을 맞췄거나 기회를 다 소모한 경우
       return ResponseEntity
           .status(HttpStatus.OK)
           .body(new ResponseGameCloseDto(successFlag, null,
-              new GameAnswerErrorDto("CLOSED_GAME", "")));
+                new GameAnswerErrorDto("CLOSED_GAME", "")));
     }
   }
 
@@ -87,13 +85,13 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}")
-  public ResponseEntity<ResponseGameResultDto> result(@PathVariable String roomId) {
+  public ResponseEntity result(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
     int remainingCount = gameData.getRemainingCount();
     int answerCount = gameData.getAnswerCount();
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(new ResponseGameResultDto(true, new GameResultDto(remainingCount, answerCount)));
+        .body(new ResponseGameDto(true, new GameResultDto(remainingCount, answerCount)));
   }
 
   /**
@@ -101,11 +99,11 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}/history")
-  public ResponseEntity<ResponseGameHistoriesDto> history(@PathVariable String roomId) {
+  public ResponseEntity history(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
     Collection<GameHistory> histories = gameData.getHistories();
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(new ResponseGameHistoriesDto(true, new GameHistoriesDto(histories)));
+        .body(new ResponseGameDto(true, new GameHistoriesDto(histories)));
   }
 }

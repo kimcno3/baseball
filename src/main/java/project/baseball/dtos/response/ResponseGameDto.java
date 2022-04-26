@@ -2,15 +2,14 @@ package project.baseball.dtos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import project.baseball.dtos.GameAnswerDataDto;
 
 /**
- *.
+ * .
  */
 
 @Getter
 @AllArgsConstructor
-public class ResponseGameContinueDto {
+public class ResponseGameDto<T> {
   private boolean success;
-  private GameAnswerDataDto data;
+  private T data;
 }

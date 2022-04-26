@@ -26,7 +26,6 @@ public class GameRepositoryImpl implements GameRepository {
   @Override
   public Long save(GameData gameData) {
     database.put(sequence.incrementAndGet(), gameData);
-    log.info("sequence = {}", sequence);
     return sequence.get();
   }
 
