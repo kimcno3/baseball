@@ -118,6 +118,16 @@ public class GameServiceImpl implements GameService {
     String[] gameDataAnswerArray = splitAnswer(gameDataAnswer);
     String[] userAnswerArray = splitAnswer(answer);
 
+    return checkCurrentCount(gameDataAnswer, userAnswerArray, gameDataAnswerArray);
+  }
+
+  private String[] splitAnswer(String answer) {
+    return answer.split("");
+  }
+
+  private int[] checkCurrentCount(String gameDataAnswer,
+                                  String[] userAnswerArray,
+                                  String[] gameDataAnswerArray) {
     int s = 0;
     int b = 0;
     int o = 0;
@@ -133,10 +143,6 @@ public class GameServiceImpl implements GameService {
     }
     int[] count = {s, b, o};
     return count;
-  }
-
-  private String[] splitAnswer(String answer) {
-    return answer.split("");
   }
 
   private int checkOutCount(String gameDataAnswer, String userText, int o) {
