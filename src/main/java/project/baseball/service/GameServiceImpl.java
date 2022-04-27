@@ -27,36 +27,15 @@ public class GameServiceImpl implements GameService {
   private final GameRepository gameRepository;
 
   @Override
-  public GameData findGameData(Long id) {
-    return gameRepository.findById(id);
-  }
-
-  @Override
   public GameData findGameData(String roomId) {
     return gameRepository.findByRoomId(roomId);
   }
 
   @Override
-  public GameResult findResult(String roomId) {
-    GameData gameData = gameRepository.findByRoomId(roomId);
-    return gameRepository.findResultByGameData(gameData);
-  }
-
-  @Override
   public GameData saveGameData() {
-    String answer = RandomStringMaker.makeAnswer();
-    GameData gameData = buildGameData(answer);
+    GameData gameData = GameData.buildGameData();
+    log.info("gameData = {}", gameData);
     return gameRepository.save(gameData);
-  }
-
-  private GameData buildGameData(String answer) {
-    GameData gameData = GameData.builder()
-        .roomId(makeRandomRoomId())
-        .answer(answer)
-        .answerCount(0)
-        .remainingCount(10)
-        .build();
-    return gameData;
   }
 
   private GameResult saveHistory(int[] count, String answer, String roomId) {
@@ -93,7 +72,7 @@ public class GameServiceImpl implements GameService {
     GameData gameData = gameRepository.findByRoomId(roomId);
     int preRemainingCount = gameData.getRemainingCount();
     // 게임이 가능한 경우
-    if (answer.length() == 3 && (0 < preRemainingCount && preRemainingCount <= 10)) {
+    if (!gameData.isCorrect() && (0 < preRemainingCount && preRemainingCount <= 10)) {
       // 카운트 계산 로직
       int[] count = checkCount(gameData, answer);
       // 결과값 저장
@@ -105,11 +84,11 @@ public class GameServiceImpl implements GameService {
       if (result.getStrike() == 3) {
         gameData.setCorrect(true);
       }
-      // 게임 계속 진행
-      return gameData;
     }
+    // 게임 계속 진행
+    return gameData;
     // 게임이 불가능한 경우
-    throw new RuntimeException("게임 진행 불가");
+    //throw new RuntimeException("게임 진행 불가");
   }
 
   // 게임 로직 구현 시 필요한 메소드 -> 구분할 방법은?

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.baseball.domain.GameData;
 import project.baseball.dtos.request.RequestAnswerDto;
-import project.baseball.dtos.response.ResponseGameDto;
+import project.baseball.dtos.response.ResponseDto;
 import project.baseball.service.GameService;
 
 /**
@@ -30,9 +30,10 @@ public class GameController {
    */
 
   @PostMapping("/start")
-  public ResponseGameDto start() {
+  public ResponseDto start() {
     GameData gameData = gameService.saveGameData();
-    return ResponseGameDto.successStart(gameData);
+    log.info("roomId = {}, answer = {}", gameData.getRoomId(), gameData.getAnswer());
+    return ResponseDto.successStart(gameData);
   }
 
   /**
@@ -40,13 +41,13 @@ public class GameController {
    */
 
   @PostMapping("/{roomId}/answer")
-  public ResponseGameDto play(@PathVariable String roomId,
+  public ResponseDto play(@PathVariable String roomId,
                               @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.playGame(roomId, answerDto.getAnswer());
-    if (!gameData.isCorrect()) {
-      return ResponseGameDto.successAnswer(gameData);
+    if (gameData.getHistories().size() == 10) {
+      return ResponseDto.failAnswer();
     } else {
-      return ResponseGameDto.failAnswer();
+      return ResponseDto.successAnswer(gameData);
     }
   }
 
@@ -55,9 +56,9 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}")
-  public ResponseGameDto result(@PathVariable String roomId) {
+  public ResponseDto result(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
-    return ResponseGameDto.successResult(gameData);
+    return ResponseDto.successResult(gameData);
   }
 
   /**
@@ -65,8 +66,8 @@ public class GameController {
    */
 
   @GetMapping("/{roomId}/history")
-  public ResponseGameDto history(@PathVariable String roomId) {
+  public ResponseDto history(@PathVariable String roomId) {
     GameData gameData = gameService.findGameData(roomId);
-    return ResponseGameDto.successHistories(gameData);
+    return ResponseDto.successHistories(gameData);
   }
 }

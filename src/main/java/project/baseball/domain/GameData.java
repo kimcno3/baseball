@@ -1,9 +1,12 @@
 package project.baseball.domain;
 
+import static project.baseball.utils.RandomStringMaker.makeRandomRoomId;
+
 import java.util.ArrayList;
 import javax.persistence.Entity;
 import lombok.Builder;
 import lombok.Getter;
+import project.baseball.utils.RandomStringMaker;
 
 /**
  * .
@@ -12,11 +15,11 @@ import lombok.Getter;
 @Entity
 @Getter
 public class GameData {
+  private boolean correct;
   private String roomId;
   private String answer;
   private int remainingCount;
   private int answerCount;
-  private boolean correct;
   private ArrayList<GameHistory> histories = new ArrayList<>();
 
   /**
@@ -24,15 +27,27 @@ public class GameData {
    */
 
   @Builder
-  public GameData(String roomId, String answer, int remainingCount, int answerCount) {
+  public GameData(boolean correct, String roomId, String answer,
+                  int remainingCount, int answerCount) {
+    this.correct = correct;
     this.roomId = roomId;
     this.answer = answer;
     this.remainingCount = remainingCount;
     this.answerCount = answerCount;
   }
 
-  public boolean isCorrect() {
-    return correct;
+  /** . */
+
+  public static GameData buildGameData() {
+    String answer = RandomStringMaker.makeAnswer();
+    GameData gameData = GameData.builder()
+        .correct(false)
+        .roomId(makeRandomRoomId())
+        .answer(answer)
+        .answerCount(0)
+        .remainingCount(10)
+        .build();
+    return gameData;
   }
 
   public void setCorrect(boolean correct) {
