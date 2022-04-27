@@ -24,9 +24,9 @@ public class GameRepositoryImpl implements GameRepository {
   private final AtomicLong sequence;
 
   @Override
-  public Long save(GameData gameData) {
+  public GameData save(GameData gameData) {
     database.put(sequence.incrementAndGet(), gameData);
-    return sequence.get();
+    return database.get(sequence.get());
   }
 
   @Override

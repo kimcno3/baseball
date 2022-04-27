@@ -9,7 +9,7 @@ import project.baseball.domain.GameResult;
  **/
 
 public interface GameRepository {
-  Long save(GameData data);
+  GameData save(GameData data);
 
   GameData findById(Long id);
 

@@ -5,11 +5,14 @@ import static project.baseball.utils.RandomStringMaker.makeRandomRoomId;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameHistory;
 import project.baseball.domain.GameResult;
 import project.baseball.repository.GameRepository;
+import project.baseball.repository.GameRepositoryImpl;
+import project.baseball.utils.RandomStringMaker;
 
 /**
  * Service 구현체.
@@ -40,8 +43,8 @@ public class GameServiceImpl implements GameService {
   }
 
   @Override
-  public Long saveGameData() {
-    String answer = makeAnswer();
+  public GameData saveGameData() {
+    String answer = RandomStringMaker.makeAnswer();
     GameData gameData = buildGameData(answer);
     return gameRepository.save(gameData);
   }
@@ -86,10 +89,9 @@ public class GameServiceImpl implements GameService {
   }
 
   @Override
-  public boolean playGame(String roomId, String answer) {
+  public GameData playGame(String roomId, String answer) {
     GameData gameData = gameRepository.findByRoomId(roomId);
     int preRemainingCount = gameData.getRemainingCount();
-
     // 게임이 가능한 경우
     if (answer.length() == 3 && (0 < preRemainingCount && preRemainingCount <= 10)) {
       // 카운트 계산 로직
@@ -100,13 +102,11 @@ public class GameServiceImpl implements GameService {
       gameData.plusAnswerCount();
       gameData.minusRemainingCount();
       // 게임이 끝난 경우 - 정답 or 답변 횟수 10번 초과
-      int remainingCount = gameData.getRemainingCount();
-      int s = result.getStrike();
-      if (s == 3 || remainingCount <= 0) {
-        return false;
+      if (result.getStrike() == 3) {
+        gameData.setCorrect(true);
       }
       // 게임 계속 진행
-      return true;
+      return gameData;
     }
     // 게임이 불가능한 경우
     throw new RuntimeException("게임 진행 불가");
