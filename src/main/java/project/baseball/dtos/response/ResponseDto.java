@@ -19,7 +19,7 @@ public class ResponseDto<T, S> {
   private S error;
 
   public static ResponseDto successStart(GameData gameData) {
-    return new ResponseDto(true, new StartData(gameData.getRoomId()), null);
+    return new ResponseDto(true, StartData.from(gameData), null);
   }
 
   public static ResponseDto successAnswer(GameData gameData) {
@@ -79,19 +79,6 @@ public class ResponseDto<T, S> {
 
   @Getter
   @AllArgsConstructor
-  public static class Error {
-    private String code;
-    private String message;
-
-    private static Error from(String code, String message) {
-      return new Error(code, message);
-    }
-  }
-
-  /** . */
-
-  @Getter
-  @AllArgsConstructor
   public static class ResultData {
     private int remainingCount;
     private int answerCount;
@@ -110,6 +97,19 @@ public class ResponseDto<T, S> {
 
     private static HistoriesData from(GameData gameData) {
       return new HistoriesData(gameData.getHistories());
+    }
+  }
+
+  /** . */
+
+  @Getter
+  @AllArgsConstructor
+  public static class Error {
+    private String code;
+    private String message;
+
+    private static Error from(String code, String message) {
+      return new Error(code, message);
     }
   }
 }

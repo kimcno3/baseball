@@ -32,7 +32,7 @@ public class GameController {
   @PostMapping("/start")
   public ResponseDto start() {
     GameData gameData = gameService.saveGameData();
-    log.info("roomId = {}, answer = {}", gameData.getRoomId(), gameData.getAnswer());
+    log.info("answer = {}", gameData.getAnswer());
     return ResponseDto.successStart(gameData);
   }
 
@@ -41,10 +41,9 @@ public class GameController {
    */
 
   @PostMapping("/{roomId}/answer")
-  public ResponseDto play(@PathVariable String roomId,
-                              @RequestBody RequestAnswerDto answerDto) {
+  public ResponseDto play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.playGame(roomId, answerDto.getAnswer());
-    if (gameData.getHistories().size() == 10) {
+    if (gameData.getRemainingCount() == 0) {
       return ResponseDto.failAnswer();
     } else {
       return ResponseDto.successAnswer(gameData);

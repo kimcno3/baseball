@@ -11,11 +11,7 @@ import project.baseball.domain.GameResult;
 public interface GameRepository {
   GameData save(GameData data);
 
-  GameData findById(Long id);
-
   GameData findByRoomId(String roomId);
 
-  GameResult findResultByGameData(GameData gameData);
-
-  void saveHistory(String roomId, GameHistory history);
+  GameData saveHistory(GameData gameData, GameHistory history);
 }

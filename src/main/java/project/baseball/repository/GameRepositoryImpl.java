@@ -31,16 +31,9 @@ public class GameRepositoryImpl implements GameRepository {
   }
 
   @Override
-  public void saveHistory(String roomId, GameHistory history) {
-    GameData gameData = findByRoomId(roomId);
-
-    ArrayList<GameHistory> histories = gameData.getHistories();
-    histories.add(gameData.getAnswerCount(), history);
-  }
-
-  @Override
-  public GameData findById(Long id) {
-    return database.get(id);
+  public GameData saveHistory(GameData gameData, GameHistory history) {
+    gameData.getHistories().add(gameData.getHistories().size(), history);
+    return gameData;
   }
 
   @Override
@@ -51,10 +44,5 @@ public class GameRepositoryImpl implements GameRepository {
       }
     }
     throw new NullPointerException("해당 roomId는 없습니다");
-  }
-
-  @Override
-  public GameResult findResultByGameData(GameData gameData) {
-    return gameData.getHistories().get(gameData.getAnswerCount() - 1).getResult();
   }
 }
