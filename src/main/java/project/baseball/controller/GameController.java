@@ -42,7 +42,7 @@ public class GameController {
   @PostMapping("/{roomId}/answer")
   public ResponseDto play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.playGame(roomId, answerDto.getAnswer());
-    return ResponseDto.responsePlay(gameData);
+    return ResponseDto.successAnswer(gameData);
   }
 
   /**

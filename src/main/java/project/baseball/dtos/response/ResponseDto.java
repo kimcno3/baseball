@@ -22,21 +22,6 @@ public class ResponseDto<T, S> {
     return new ResponseDto(true, StartData.from(gameData), null);
   }
 
-  /**
-   * .
-   */
-
-  public static ResponseDto responsePlay(GameData gameData) {
-    if (gameData.getRemainingCount() == 0) {
-      return ResponseDto.failAnswer();
-    }
-    return ResponseDto.successAnswer(gameData);
-  }
-
-  public static ResponseDto failAnswer() {
-    return new ResponseDto(false, null, Error.from("CLOSED_GAME", ""));
-  }
-
   public static ResponseDto successAnswer(GameData gameData) {
     return new ResponseDto(true, AnswerData.from(gameData), null);
   }
@@ -47,6 +32,10 @@ public class ResponseDto<T, S> {
 
   public static ResponseDto successHistories(GameData gameData) {
     return new ResponseDto(true, HistoriesData.from(gameData), null);
+  }
+
+  public static ResponseDto fail(String code, String message) {
+    return new ResponseDto(false, null, Error.from(code, message));
   }
 
   /** . */
@@ -119,7 +108,7 @@ public class ResponseDto<T, S> {
     private String code;
     private String message;
 
-    private static Error from(String code, String message) {
+    public static Error from(String code, String message) {
       return new Error(code, message);
     }
   }

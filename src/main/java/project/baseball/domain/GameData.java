@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import project.baseball.exception.GameClosedException;
 import project.baseball.utils.RandomStringMaker;
 
 /**
@@ -55,14 +56,11 @@ public class GameData {
   /** . */
 
   public GameHistory checkCount(String answer) {
-    if (this.isCorrect()) {
-      this.remainingCount = 0;
-    }
-    if (0 < this.remainingCount && this.remainingCount <= 10) {
+    if (!this.isCorrect() && 0 < this.remainingCount && this.remainingCount <= 10) {
       int[] count = checkCountLogic(this, answer);
       return GameHistory.makeHistory(count, answer);
     }
-    return null;
+    throw new GameClosedException("게임이 종료되었습니다.");
   }
 
   private int[] checkCountLogic(GameData gameData, String answer) {

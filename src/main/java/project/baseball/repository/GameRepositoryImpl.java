@@ -1,7 +1,5 @@
 package project.baseball.repository;
 
-
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameHistory;
-import project.baseball.domain.GameResult;
+import project.baseball.exception.NoRoomIdException;
 
 /**
  * Repository 구현체.
@@ -42,6 +40,6 @@ public class GameRepositoryImpl implements GameRepository {
         return tempData;
       }
     }
-    throw new NullPointerException("해당 roomId는 없습니다");
+    throw new NoRoomIdException("해당 roomId는 존재하지 않습니다.");
   }
 }
