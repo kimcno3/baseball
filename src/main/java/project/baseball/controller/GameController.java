@@ -43,11 +43,7 @@ public class GameController {
   @PostMapping("/{roomId}/answer")
   public ResponseDto play(@PathVariable String roomId, @RequestBody RequestAnswerDto answerDto) {
     GameData gameData = gameService.playGame(roomId, answerDto.getAnswer());
-    if (gameData.getRemainingCount() == 0) {
-      return ResponseDto.failAnswer();
-    } else {
-      return ResponseDto.successAnswer(gameData);
-    }
+    return ResponseDto.responsePlay(gameData);
   }
 
   /**
