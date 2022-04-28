@@ -41,10 +41,6 @@ public class GameServiceImpl implements GameService {
   public GameData playGame(String roomId, String answer) {
     GameData gameData = gameRepository.findByRoomId(roomId);
     GameHistory history = gameData.checkCount(answer);
-    return saveHistory(gameData, history);
-  }
-
-  private GameData saveHistory(GameData gameData, GameHistory history) {
     return gameRepository.saveHistory(gameData, history);
   }
 }

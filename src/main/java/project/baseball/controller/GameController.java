@@ -32,7 +32,6 @@ public class GameController {
   @PostMapping("/start")
   public ResponseDto start() {
     GameData gameData = gameService.saveGameData();
-    log.info("answer = {}", gameData.getAnswer());
     return ResponseDto.successStart(gameData);
   }
 
