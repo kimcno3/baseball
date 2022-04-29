@@ -29,8 +29,7 @@ public class GameRepositoryImpl implements GameRepository {
 
   @Override
   public GameData saveHistory(GameData gameData, GameHistory history) {
-    gameData.getHistories().add(gameData.getHistories().size(), history);
-    return gameData;
+    return gameData.addHistory(history);
   }
 
   @Override

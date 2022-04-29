@@ -1,7 +1,5 @@
 package project.baseball.domain;
 
-import static project.baseball.utils.RandomStringMaker.makeRandomRoomId;
-
 import java.util.ArrayList;
 import javax.persistence.Entity;
 import lombok.Builder;
@@ -56,17 +54,25 @@ public class GameData {
   /** . */
 
   public GameHistory checkCount(String answer) {
-    if (!this.isCorrect() && 0 < this.remainingCount && this.remainingCount <= 10) {
-      int[] count = checkCountLogic(this, answer);
+    if (!this.isCorrect() && isCheckCount()) {
+      int[] count = checkCountLogic(answer);
       return GameHistory.makeHistory(count, answer);
     }
     throw new GameClosedException("게임이 종료되었습니다.");
   }
 
-  private int[] checkCountLogic(GameData gameData, String answer) {
-    gameData.plusAnswerCount();
-    gameData.minusRemainingCount();
-    String gameDataAnswer = gameData.getAnswer();
+  private boolean isCheckCount() {
+    if (0 < this.remainingCount && this.remainingCount <= 10) {
+      return true;
+    }
+    return false;
+  }
+
+  private int[] checkCountLogic(String answer) {
+    this.plusAnswerCount();
+    this.minusRemainingCount();
+
+    String gameDataAnswer = this.getAnswer();
     String[] gameDataAnswerArray = splitAnswer(gameDataAnswer);
     String[] userAnswerArray = splitAnswer(answer);
     return checkCurrentCount(gameDataAnswer, userAnswerArray, gameDataAnswerArray);
@@ -80,12 +86,12 @@ public class GameData {
     return this.remainingCount -= 1;
   }
 
-  private String[] splitAnswer(String answer) {
+  private static String[] splitAnswer(String answer) {
     return answer.split("");
   }
 
   private int[] checkCurrentCount(String gameDataAnswer,
-      String[] userAnswerArray, String[] gameDataAnswerArray) {
+                                  String[] userAnswerArray, String[] gameDataAnswerArray) {
     int s = 0;
     int b = 0;
     int o = 0;
@@ -118,16 +124,25 @@ public class GameData {
     return s;
   }
 
+  private int checkBallCount(String gameDataText, String userText, int b, int i, int j) {
+    if (gameDataText.equals(userText) && i != j) {
+      b++;
+    }
+    return b;
+  }
+
   private void checkAnswer(int s) {
     if (s == 3) {
       this.correct = true;
     }
   }
 
-  private int checkBallCount(String gameDataText, String userText, int b, int i, int j) {
-    if (gameDataText.equals(userText) && i != j) {
-      b++;
-    }
-    return b;
+  public GameData addHistory(GameHistory history) {
+    this.getHistories().add(this.getHistories().size(), history);
+    return this;
+  }
+
+  public GameHistory getLastHistory() {
+    return this.getHistories().get(this.getHistories().size() - 1);
   }
 }
