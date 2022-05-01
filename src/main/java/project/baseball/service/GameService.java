@@ -8,13 +8,9 @@ import project.baseball.domain.GameResult;
  **/
 
 public interface GameService {
-  Long saveGameData();
-
-  GameData findGameData(Long id);
+  GameData saveGameData();
 
   GameData findGameData(String gameId);
 
-  GameResult findResult(String roomId);
-
-  boolean playGame(String roomId, String answer);
+  GameData playGame(String roomId, String answer);
 }

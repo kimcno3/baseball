@@ -20,4 +20,27 @@ public class GameHistory {
     this.answer = answer;
     this.result = result;
   }
+
+  /** . */
+
+  public static GameHistory buildHistory(String answer, GameResult result) {
+    GameHistory history = GameHistory.builder()
+        .answer(answer)
+        .result(result)
+        .build();
+    return history;
+  }
+
+  /** . */
+
+  public static GameHistory makeHistory(int[] count, String answer) {
+    int s = count[0];
+    int b = count[1];
+    int o = count[2];
+
+    GameResult result = GameResult.buildResult(s, b, o);
+    GameHistory history = GameHistory.buildHistory(answer, result);
+    return history;
+  }
+
 }

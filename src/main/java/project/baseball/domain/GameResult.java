@@ -26,4 +26,15 @@ public class GameResult {
     this.ball = ball;
     this.out = out;
   }
+
+  /** . */
+
+  public static GameResult buildResult(int s, int b, int o) {
+    GameResult result = GameResult.builder()
+        .strike(s)
+        .ball(b)
+        .out(o)
+        .build();
+    return result;
+  }
 }

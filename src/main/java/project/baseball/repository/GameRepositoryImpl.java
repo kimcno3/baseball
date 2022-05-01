@@ -1,7 +1,5 @@
 package project.baseball.repository;
 
-
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.baseball.domain.GameData;
 import project.baseball.domain.GameHistory;
-import project.baseball.domain.GameResult;
+import project.baseball.exception.NoRoomIdException;
 
 /**
  * Repository 구현체.
@@ -24,23 +22,14 @@ public class GameRepositoryImpl implements GameRepository {
   private final AtomicLong sequence;
 
   @Override
-  public Long save(GameData gameData) {
+  public GameData save(GameData gameData) {
     database.put(sequence.incrementAndGet(), gameData);
-    log.info("sequence = {}", sequence);
-    return sequence.get();
+    return database.get(sequence.get());
   }
 
   @Override
-  public void saveHistory(String roomId, GameHistory history) {
-    GameData gameData = findByRoomId(roomId);
-
-    ArrayList<GameHistory> histories = gameData.getHistories();
-    histories.add(gameData.getAnswerCount(), history);
-  }
-
-  @Override
-  public GameData findById(Long id) {
-    return database.get(id);
+  public GameData saveHistory(GameData gameData, GameHistory history) {
+    return gameData.addHistory(history);
   }
 
   @Override
@@ -50,11 +39,6 @@ public class GameRepositoryImpl implements GameRepository {
         return tempData;
       }
     }
-    throw new NullPointerException("해당 roomId는 없습니다");
-  }
-
-  @Override
-  public GameResult findResultByGameData(GameData gameData) {
-    return gameData.getHistories().get(gameData.getAnswerCount() - 1).getResult();
+    throw new NoRoomIdException("해당 roomId는 존재하지 않습니다.");
   }
 }
